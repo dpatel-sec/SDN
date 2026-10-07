@@ -1,14 +1,99 @@
-Step 1: start ryu controller 
-bash:
-ryu-manager my_ryucontroller.py
+How to run the Zero Trust SDN project
+=====================================
 
-  then run ryu with mininet's custom topology 
-bash: 
-  sudo mn --custom_topo.py --topo custom_tree_topo \ --controller=remote, ip=-127.0.0.1,port=663 --mac
+Prerequisites
+-------------
 
-  to test connectivity 
-bash: 
-pingall :
+Use a Linux VM or host that supports Mininet and Open vSwitch. Ubuntu is the
+most common choice for this project.
 
+Install system packages:
 
+    sudo apt update
+    sudo apt install -y mininet openvswitch-switch python3 python3-pip git
 
+Install Python dependencies:
+
+    python3 -m pip install -r requirements.txt
+
+If Ryu is not available from pip on your Python version, install it from source:
+
+    git clone https://github.com/faucetsdn/ryu.git
+    cd ryu
+    python3 -m pip install -r requirements.txt
+    python3 -m pip install .
+
+Terminal 1: start the controller
+--------------------------------
+
+From this project folder:
+
+    ryu-manager my_controller.py
+
+Expected result:
+
+    Loaded 6 Zero Trust hosts and 20 policy pairs
+
+Keep this terminal open so you can watch ALLOW and DENY log events.
+
+Terminal 2: start Mininet
+-------------------------
+
+From this project folder:
+
+    sudo python3 my_custom_topology.py
+
+Alternative Mininet command:
+
+    sudo mn --custom my_custom_topology.py --topo custom_tree_topo --controller remote,ip=127.0.0.1,port=6653 --switch ovs,protocols=OpenFlow13 --mac
+
+Useful Mininet cleanup command if a previous run crashed:
+
+    sudo mn -c
+
+Connectivity tests
+------------------
+
+Inside the Mininet CLI, run allowed tests:
+
+    h1 ping -c 3 h2
+    h1 ping -c 3 h4
+    h3 ping -c 3 h4
+    h4 ping -c 3 h5
+    h6 ping -c 3 h5
+
+Run denied tests:
+
+    h3 ping -c 3 h5
+    h1 ping -c 3 h5
+    h2 ping -c 3 h5
+
+The allowed tests should receive replies. The denied tests should fail and the
+controller terminal should print DENY log messages.
+
+Attack simulation examples
+--------------------------
+
+Port scan from guest host h3 against the allowed web host h4:
+
+    h3 nmap -p 1-30 10.0.0.4
+
+Packet-rate test from h3:
+
+    h3 ping -f -c 100 10.0.0.4
+
+Performance test with iperf:
+
+    h4 iperf -s &
+    h1 iperf -c 10.0.0.4 -t 10
+
+Exit
+----
+
+Inside Mininet:
+
+    exit
+
+Then clean up if needed:
+
+    sudo mn -c

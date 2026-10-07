@@ -1,0 +1,76 @@
+{
+  "description": "Host inventory and microsegmentation rules for the Zero Trust SDN demo.",
+  "hosts": {
+    "h1": {
+      "mac": "00:00:00:00:00:01",
+      "ip": "10.0.0.1",
+      "role": "employee",
+      "switch": 2,
+      "port": 2
+    },
+    "h2": {
+      "mac": "00:00:00:00:00:02",
+      "ip": "10.0.0.2",
+      "role": "employee",
+      "switch": 2,
+      "port": 3
+    },
+    "h3": {
+      "mac": "00:00:00:00:00:03",
+      "ip": "10.0.0.3",
+      "role": "guest",
+      "switch": 2,
+      "port": 4
+    },
+    "h4": {
+      "mac": "00:00:00:00:00:04",
+      "ip": "10.0.0.4",
+      "role": "web",
+      "switch": 3,
+      "port": 2
+    },
+    "h5": {
+      "mac": "00:00:00:00:00:05",
+      "ip": "10.0.0.5",
+      "role": "database",
+      "switch": 3,
+      "port": 3
+    },
+    "h6": {
+      "mac": "00:00:00:00:00:06",
+      "ip": "10.0.0.6",
+      "role": "monitor",
+      "switch": 3,
+      "port": 4
+    }
+  },
+  "allowed_pairs": [
+    ["h1", "h2"],
+    ["h2", "h1"],
+    ["h1", "h4"],
+    ["h4", "h1"],
+    ["h2", "h4"],
+    ["h4", "h2"],
+    ["h3", "h4"],
+    ["h4", "h3"],
+    ["h4", "h5"],
+    ["h5", "h4"],
+    ["h6", "h1"],
+    ["h1", "h6"],
+    ["h6", "h2"],
+    ["h2", "h6"],
+    ["h6", "h3"],
+    ["h3", "h6"],
+    ["h6", "h4"],
+    ["h4", "h6"],
+    ["h6", "h5"],
+    ["h5", "h6"]
+  ],
+  "thresholds": {
+    "packet_rate_window_seconds": 5,
+    "packet_rate_limit": 80,
+    "port_scan_window_seconds": 10,
+    "port_scan_unique_ports": 12,
+    "temporary_block_seconds": 30
+  }
+}

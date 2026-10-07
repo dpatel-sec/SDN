@@ -1,7 +1,97 @@
-Successful host-to-host communication with zero trut policies in place 
-packet forwarding is controlled by ryu, traffic monitoring and drop analysis performed. 
+ Results and future scope
+========================
 
-future scope 
-integration of AI/ML for adaptive threat detection.
-scalling architecture for large enterprise network.
-expanding zero trust to include multi factor authentication (M.F.A) for host comunication 
+Project summary
+---------------
+
+This project now demonstrates a working Software-Defined Networking topology
+with Zero Trust enforcement through the Ryu controller. Packet forwarding is
+controlled centrally by Ryu, while host identity, source IP validation,
+microsegmentation, and suspicious traffic detection are enforced before traffic
+is forwarded.
+
+Implemented results
+-------------------
+
+1. Working SDN topology
+   - 3 OpenFlow switches.
+   - 6 deterministic Mininet hosts.
+   - Remote Ryu controller using OpenFlow 1.3.
+
+2. Zero Trust host inventory
+   - Each host has a fixed MAC address, IP address, and role.
+   - Unknown MAC addresses are denied.
+   - Source IP spoofing is denied.
+
+3. Microsegmentation
+   - Allowed pairs are defined in zero_trust_policy.json.
+   - Denied pairs are dropped and logged.
+   - Guest host h3 can reach the web service h4 but not the database h5.
+   - Employee hosts h1 and h2 can reach the web service h4 but not the database h5 directly.
+   - Web service h4 can reach database h5.
+   - Monitoring host h6 can reach all project hosts.
+
+4. Monitoring and attack response
+   - The controller logs ALLOW and DENY decisions.
+   - Repeated high-rate traffic can trigger a temporary block.
+   - Repeated destination-port probes can trigger a temporary block.
+
+Suggested evidence to capture
+-----------------------------
+
+Fill this section after running the project in Mininet.
+
+Environment:
+
+    Python version:
+    Ryu version:
+    Mininet version:
+    Open vSwitch version:
+    Operating system:
+
+Allowed connectivity:
+
+    h1 -> h2:
+    h1 -> h4:
+    h2 -> h4:
+    h3 -> h4:
+    h4 -> h5:
+    h6 -> h5:
+
+Denied connectivity:
+
+    h3 -> h5:
+    h1 -> h5:
+    h2 -> h5:
+
+Attack tests:
+
+    Nmap scan result:
+    Packet-rate test result:
+    Controller DENY logs captured:
+
+Performance:
+
+    h1 -> h4 iperf throughput:
+    Observed latency from ping:
+
+Future scope
+------------
+
+1. Add certificate-based or token-based host authentication instead of relying
+   only on deterministic Mininet MAC and IP addresses.
+
+2. Add a real policy engine such as Open Policy Agent or a database-backed
+   policy store so rules can be changed without restarting the controller.
+
+3. Integrate AI/ML anomaly detection using flow statistics, packet rate,
+   protocol distribution, and historical behavior.
+
+4. Export controller events to a dashboard or SIEM for live monitoring.
+
+5. Add MFA or user identity integration for user-to-service communication.
+
+6. Scale the topology to multiple tenants, VLANs, or cloud-like network zones.
+
+7. Add automated tests that start Mininet, run policy checks, and produce a
+   final pass/fail report.
